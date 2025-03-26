@@ -1,8 +1,8 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
-import OpenAI from 'openai';
-import { z } from 'zod';
-import { zodResponseFormat } from 'openai/helpers/zod';
+import OpenAI from 'openai'
+import { z } from 'zod'
+import { zodResponseFormat } from 'openai/helpers/zod'
 
 const defaultPrompt = `You are a repository issue checker. 
 You are given an issue content and you need to decide whether to close the issue. 
@@ -28,10 +28,10 @@ export async function run() {
       prompt = defaultPrompt
     }
     if (model === '') {
-      model = "gpt-4o-mini"
+      model = 'gpt-4o-mini'
     }
     if (apiUrl === '') {
-      apiUrl = "https://api.openai.com"
+      apiUrl = 'https://api.openai.com'
     }
     if (apiKey === '') {
       core.setFailed('No API key found')
@@ -57,7 +57,13 @@ export async function run() {
     const issueBody = issue.body
 
     const content = `${issueTitle}\n${issueBody}`
-    const { should_close, should_comment, comment } = await checkIssue(content, apiUrl, apiKey, prompt, model)
+    const { should_close, should_comment, comment } = await checkIssue(
+      content,
+      apiUrl,
+      apiKey,
+      prompt,
+      model
+    )
 
     if (should_close) {
       core.info(`Closing issue ${issueNumber}`)
@@ -66,7 +72,7 @@ export async function run() {
         owner: context.repo.owner,
         repo: context.repo.repo,
         issue_number: issueNumber,
-        state: 'closed',
+        state: 'closed'
       })
       if (should_comment) {
         core.info(`Commenting on issue ${issueNumber}`)
@@ -74,7 +80,7 @@ export async function run() {
           owner: context.repo.owner,
           repo: context.repo.repo,
           issue_number: issueNumber,
-          body: comment,
+          body: comment
         })
       }
     }
@@ -87,30 +93,29 @@ export async function run() {
 const ResponseFormat = z.object({
   should_close: z.boolean(),
   should_comment: z.boolean(),
-  comment: z.string(),
+  comment: z.string()
 })
 
 async function checkIssue(content, apiUrl, apiKey, prompt, model) {
-  let retry = 3;
+  let retry = 3
   while (true) {
     try {
-      const client = new OpenAI({ baseURL: apiUrl, apiKey: apiKey });
+      const client = new OpenAI({ baseURL: apiUrl, apiKey: apiKey })
       const completion = await client.beta.chat.completions.parse({
         model: model,
         messages: [
           { role: 'system', content: prompt },
-          { role: 'user', content: content },
+          { role: 'user', content: content }
         ],
-        response_format: zodResponseFormat(ResponseFormat, 'response'),
-      });
-      const message = completion.choices[0]?.message;
+        response_format: zodResponseFormat(ResponseFormat, 'response')
+      })
+      const message = completion.choices[0]?.message
       if (!message?.parsed) {
-        throw new Error('Gpt didn\'t return a valid response');
+        throw new Error("Gpt didn't return a valid response")
       }
       core.info(JSON.stringify(message.parsed))
-      return message.parsed;
-    }
-    catch (error) {
+      return message.parsed
+    } catch (error) {
       if (error instanceof Error) {
         core.error(error.message)
         if (retry > 0) {
