@@ -33,6 +33,7 @@ jobs:
           api-key: ${{ secrets.API_KEY }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           prompt: 'You are a repository issue checker. Please ...' # Optional.
+          model: 'gpt-4o-mini' # Optional. default: 'gpt-4o-mini'
 ```
 
 The default prompt is:
