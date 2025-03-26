@@ -4,6 +4,10 @@ on:
   issues:
     types: [opened]
 
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   check:
     name: Check Issue
@@ -20,4 +24,4 @@ jobs:
         with:
           api-url: ${{ secrets.API_URL }}
           api-key: ${{ secrets.API_KEY }}
-          github-token: ${{ secrets.ACTION_GITHUB_TOKEN }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
