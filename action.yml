@@ -1,11 +1,11 @@
-name: The name of your action here
-description: Provide a description here
-author: Your name or organization here
+name: gpt_issue_checker
+description: 'Use gpt to check issues'
+author: wgh136
 
 # Add your action's branding here. This will appear on the GitHub Marketplace.
 branding:
   icon: heart
-  color: red
+  color: blue
 
 # Define your inputs here.
 inputs:
@@ -27,8 +27,6 @@ inputs:
 
 # Define your outputs here.
 outputs:
-  time:
-    description: Your output description here
 
 runs:
   using: node20
