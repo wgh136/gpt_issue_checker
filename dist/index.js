@@ -42947,10 +42947,10 @@ async function run() {
       prompt,
       model
     );
-
+    const octokit = githubExports.getOctokit(githubToken);
     if (should_close) {
       coreExports.info(`Closing issue ${issueNumber}`);
-      const octokit = githubExports.getOctokit(githubToken);
+
       await octokit.rest.issues.update({
         owner: context.repo.owner,
         repo: context.repo.repo,

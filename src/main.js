@@ -64,10 +64,10 @@ export async function run() {
       prompt,
       model
     )
-
+    const octokit = github.getOctokit(githubToken)
     if (should_close) {
       core.info(`Closing issue ${issueNumber}`)
-      const octokit = github.getOctokit(githubToken)
+
       await octokit.rest.issues.update({
         owner: context.repo.owner,
         repo: context.repo.repo,
