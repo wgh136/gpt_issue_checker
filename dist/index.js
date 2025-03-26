@@ -42957,15 +42957,15 @@ async function run() {
         issue_number: issueNumber,
         state: 'closed'
       });
-      if (should_comment) {
-        coreExports.info(`Commenting on issue ${issueNumber}`);
-        await octokit.rest.issues.createComment({
-          owner: context.repo.owner,
-          repo: context.repo.repo,
-          issue_number: issueNumber,
-          body: comment
-        });
-      }
+    }
+    if (should_comment) {
+      coreExports.info(`Commenting on issue ${issueNumber}`);
+      await octokit.rest.issues.createComment({
+        owner: context.repo.owner,
+        repo: context.repo.repo,
+        issue_number: issueNumber,
+        body: comment
+      });
     }
   } catch (error) {
     // Fail the workflow run if an error occurs
