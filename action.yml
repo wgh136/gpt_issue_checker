@@ -27,6 +27,8 @@ inputs:
 
 # Define your outputs here.
 outputs:
+  result:
+    description: The result of the action
 
 runs:
   using: node20

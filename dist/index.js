@@ -42967,6 +42967,7 @@ async function run() {
         body: comment
       });
     }
+    coreExports.setOutput('result', should_close ? 'closed' : 'open');
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) coreExports.setFailed(error.message);
