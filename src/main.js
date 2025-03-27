@@ -1,8 +1,6 @@
 import * as core from '@actions/core'
 import * as github from '@actions/github'
 import OpenAI from 'openai'
-import { z } from 'zod'
-import { zodResponseFormat } from 'openai/helpers/zod'
 
 const defaultPrompt = `You are a repository issue checker. 
 You are given an issue content and you need to decide whether to close the issue. 
@@ -91,31 +89,45 @@ export async function run() {
   }
 }
 
-const ResponseFormat = z.object({
-  should_close: z.boolean(),
-  should_comment: z.boolean(),
-  comment: z.string()
-})
-
 async function checkIssue(content, apiUrl, apiKey, prompt, model) {
   let retry = 3
   while (true) {
     try {
       const client = new OpenAI({ baseURL: apiUrl, apiKey: apiKey })
-      const completion = await client.beta.chat.completions.parse({
+      const completion = await client.chat.completions.create({
         model: model,
         messages: [
           { role: 'system', content: prompt },
           { role: 'user', content: content }
         ],
-        response_format: zodResponseFormat(ResponseFormat, 'response')
       })
-      const message = completion.choices[0]?.message
-      if (!message?.parsed) {
-        throw new Error("Gpt didn't return a valid response")
+      const message = completion.choices[0]?.message.content
+      if (!message) {
+        throw new Error('No message found in the completion')
       }
-      core.info(JSON.stringify(message.parsed))
-      return message.parsed
+      let json
+      if (message.startsWith('```')) {
+        let lines = message.split('\n')
+        if (lines.length < 2) {
+          throw new Error('No JSON found in the completion')
+        }
+        json = JSON.parse(lines.slice(1, lines.length - 1).join('\n'))
+      } else {
+        json = JSON.parse(message)
+      }
+      let should_close = json.should_close === true
+      let should_comment = false
+      if (json.should_comment === true) {
+        should_comment = true
+      } else if (json !== false) {
+        should_comment = typeof json.comment === 'string' && json.comment !== ''
+      }
+
+      return {
+        should_close: should_close,
+        should_comment: should_comment,
+        comment: json.comment,
+      }
     } catch (error) {
       if (error instanceof Error) {
         core.error(error.message)
