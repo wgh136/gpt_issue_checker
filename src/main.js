@@ -99,7 +99,7 @@ async function checkIssue(content, apiUrl, apiKey, prompt, model) {
         messages: [
           { role: 'system', content: prompt },
           { role: 'user', content: content }
-        ],
+        ]
       })
       const message = completion.choices[0]?.message.content
       if (!message) {
@@ -126,7 +126,7 @@ async function checkIssue(content, apiUrl, apiKey, prompt, model) {
       return {
         should_close: should_close,
         should_comment: should_comment,
-        comment: json.comment,
+        comment: json.comment
       }
     } catch (error) {
       if (error instanceof Error) {
